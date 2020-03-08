@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_rounded_progress_bar/flutter_rounded_progress_bar.dart';
+import 'package:flutter_rounded_progress_bar/rounded_progress_bar_style.dart';
+
 import 'package:book_tracker/models/book.dart';
 
 class FavoriteBookCard extends StatelessWidget {
   final double progress;
   final Book book;
+  final Function(Book) onTap;
 
   const FavoriteBookCard({
     Key key,
     @required this.progress,
     @required this.book,
+    @required this.onTap,
   }) : super(key: key);
 
   @override
@@ -27,6 +32,7 @@ class FavoriteBookCard extends StatelessWidget {
     const int _kBookTitleMaxLines = 2;
     const double _kBookAuthorsSize = 22;
     const int _kBookAuthorsMaxLines = 2;
+    const double _kIndicatorHeight = 10;
 
     _buildBorderRadius({double value = 16}) => BorderRadius.all(
           Radius.circular(value),
@@ -39,19 +45,23 @@ class FavoriteBookCard extends StatelessWidget {
     final progressIndicator = Container(
       padding: EdgeInsets.only(bottom: _kIndicatorPadding * 2),
       width: _kCardWidth - _kIndicatorPadding * 2,
-      child: LinearProgressIndicator(
-        backgroundColor: Colors.white, // TODO: color
-        valueColor: AlwaysStoppedAnimation<Color>(
-          Colors.blue, // TODO: color
+      child: RoundedProgressBar(
+        borderRadius: _buildBorderRadius(),
+        height: _kIndicatorHeight,
+        percent: progress * 100,
+        style: RoundedProgressBarStyle(
+          backgroundProgress: Colors.white, // TODO: color
+          colorProgress: Colors.indigo, // TODO: color
+          borderWidth: 0,
+          widthShadow: 0,
         ),
-        value: progress,
       ),
     );
 
     final titleWidget = Container(
       width: _kCardWidth,
       child: Text(
-        book.title,
+        book.title ?? "Title not provided", // TODO: translation
         maxLines: _kBookTitleMaxLines,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
@@ -64,7 +74,7 @@ class FavoriteBookCard extends StatelessWidget {
     final authorsWidget = Container(
       width: _kCardWidth,
       child: Text(
-        book.authors.join(', '),
+        book.authors.join(', '), // TODO: translation
         maxLines: _kBookAuthorsMaxLines,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
@@ -73,37 +83,43 @@ class FavoriteBookCard extends StatelessWidget {
       ),
     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Stack(
-          alignment: Alignment.bottomCenter,
+    return InkWell(
+      onTap: () => onTap(book),
+      child: Container(
+        width: _kCardWidth,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Card(
-              margin: EdgeInsets.zero,
-              elevation: _kCardElevation,
-              shape: RoundedRectangleBorder(
-                borderRadius: _buildBorderRadius(),
-              ),
-              child: ClipRRect(
-                borderRadius: _buildBorderRadius(),
-                child: Image.network(
-                  book.thumbnail,
-                  fit: BoxFit.fill,
-                  height: _kCardHeight,
-                  width: _kCardWidth,
+            Stack(
+              alignment: Alignment.bottomCenter,
+              children: <Widget>[
+                Card(
+                  margin: EdgeInsets.zero,
+                  elevation: _kCardElevation,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: _buildBorderRadius(),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: _buildBorderRadius(),
+                    child: Image.network(
+                      book.thumbnail,
+                      fit: BoxFit.fill,
+                      height: _kCardHeight,
+                      width: _kCardWidth,
+                    ),
+                  ),
                 ),
-              ),
+                progressIndicator,
+              ],
             ),
-            progressIndicator,
+            _buildSpaceBetween(_kPaddingBetweenText),
+            titleWidget,
+            _buildSpaceBetween(_kPaddingBetweenText / 2),
+            authorsWidget,
           ],
         ),
-        _buildSpaceBetween(_kPaddingBetweenText),
-        titleWidget,
-        _buildSpaceBetween(_kPaddingBetweenText / 2),
-        authorsWidget,
-      ],
+      ),
     );
   }
 }

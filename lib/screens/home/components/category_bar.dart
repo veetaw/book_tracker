@@ -38,7 +38,6 @@ class CategoryBar extends StatelessWidget {
                 fontSize:
                     i == activeIndex ? _kActiveFontSize : _kInactiveFontSize,
                 fontWeight: i == activeIndex ? FontWeight.w700 : null,
-                color: Colors.white, // TODO: color
               ),
             ),
           ),
@@ -47,7 +46,7 @@ class CategoryBar extends StatelessWidget {
       if (i != categories.length - 1)
         categoriesWidgets.add(
           VerticalDivider(
-            color: Colors.white, // TODO: color
+            color: Theme.of(context).dividerColor,
             thickness: _kVerticalDividerThickness,
           ),
         );
@@ -57,7 +56,7 @@ class CategoryBar extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: _kMarginFromSide),
         decoration: BoxDecoration(
           borderRadius: _buildBorderRadius(),
-          color: Colors.indigo, // TODO: color
+          color: Theme.of(context).cardColor, // TODO: color
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
