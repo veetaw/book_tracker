@@ -17,7 +17,7 @@ class GoogleBookApi {
 
   GoogleBookApi([key]) : this.apiKey = key ?? GOOGLE_API_KEY;
 
-  Future<List> search(String searchTerms) async {
+  Future<List<Book>> search(String searchTerms) async {
     var rawBooks = await _session.get(
       "https://www.googleapis.com/books/v1/volumes",
       queryParameters: {
@@ -28,6 +28,10 @@ class GoogleBookApi {
         Duration(days: 31),
       ),
     );
-    return rawBooks.data["items"].map((item) => Book.fromJson(item)).toList();
+
+    List<Book> data = [];
+    for (Map<String, dynamic> rawBook in rawBooks.data["items"])
+      data.add(Book.fromJson(rawBook));
+    return data;
   }
 }
